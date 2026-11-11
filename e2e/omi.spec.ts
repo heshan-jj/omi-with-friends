@@ -184,6 +184,11 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
           );
         })
         .toBe(true);
+      expect(
+        await pages[1].evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
     }
     await expect
       .poll(async () => (await state(pages[0])).phase, { timeout: 10000 })

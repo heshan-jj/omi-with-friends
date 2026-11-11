@@ -1936,3 +1936,8 @@ svg {
     transform: none;
   }
 }
+/* Keep off-table card travel inside the viewport, including during exits. */
+.home,
+.room-page {
+  overflow-x: clip;
+}
