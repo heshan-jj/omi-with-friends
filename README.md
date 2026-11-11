@@ -43,7 +43,7 @@ npm run build
 npm run test:e2e
 ```
 
-Browser tests cover home/join validation, rules, four separate players, an eight-trick hand, hidden-card payloads, page refresh, disconnect/pause/rejoin, mobile overflow, and the next deal. Linux cloud development uses `/usr/bin/chromium` when available; otherwise Playwright uses its installed browser. Install it with `npx playwright install chromium`.
+Browser tests cover home/join validation, rules, four separate players, an eight-trick hand, hidden-card payloads, page refresh, disconnect/pause/rejoin, mobile overflow, and the next deal. Linux cloud development uses `/usr/bin/chromium` when available; otherwise Playwright uses its installed browser. Install it with `npx playwright install chromium`. CI uses Google Chrome already supplied by the pinned Ubuntu 24.04 runner, avoiding an unnecessary system-package installation.
 
 ## Publish to GitHub, Cloudflare, and Vercel
 

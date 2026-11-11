@@ -6,5 +6,5 @@
   "compatibility_flags": ["nodejs_compat"],
   "durable_objects": { "bindings": [{ "name": "Main", "class_name": "Main" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Main"] }],
-  "vars": { "ALLOWED_ORIGINS": "" },
+  "vars": { "ALLOWED_ORIGINS": "https://omi-with-friends.vercel.app" },
 }
