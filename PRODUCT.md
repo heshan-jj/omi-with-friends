@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-User approved Next.js, TypeScript, Tailwind, Motion, PartyKit on Cloudflare, Vitest, Playwright, GitHub and Vercel. Develop in the cloud.
+User approved Next.js, TypeScript, Tailwind, Motion, PartyServer on Cloudflare Durable Objects (successor to the discontinued hosted PartyKit service), Vitest, Playwright, GitHub and Vercel. Develop in the cloud.
 
 ## Users
 

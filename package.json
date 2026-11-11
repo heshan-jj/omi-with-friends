@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
-    "dev:room": "partykit dev --port 1999 --persist .party-state",
+    "dev:room": "wrangler dev --port 1999 --persist-to .party-state",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --project party/tsconfig.json",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "deploy:room": "partykit deploy",
+    "deploy:room": "wrangler deploy",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -19,21 +19,23 @@
     "lucide-react": "^0.468.0",
     "motion": "^12.0.0",
     "next": "^16.0.0",
+    "partyserver": "^0.5.10",
     "partysocket": "^1.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261110.1",
     "@playwright/test": "^1.56.0",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "partykit": "^0.0.115",
     "prettier": "^3.10.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.0",
+    "wrangler": "^4.160.1"
   },
   "type": "module",
   "engines": {

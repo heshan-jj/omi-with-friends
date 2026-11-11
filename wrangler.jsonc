@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "omi-with-friends",
+  "main": "party/worker.ts",
+  "compatibility_date": "2026-11-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": { "bindings": [{ "name": "Main", "class_name": "Main" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Main"] }],
+  "vars": { "ALLOWED_ORIGINS": "" },
+}

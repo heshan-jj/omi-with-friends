@@ -1,4 +1,4 @@
-import type * as Party from "partykit/server";
+import type * as Runtime from "../lib/room-runtime";
 import {
   beginHand,
   chooseTrump,
@@ -17,10 +17,10 @@ const fresh = (): RoomState => ({
   updatedAt: Date.now(),
   room: "",
 });
-export default class OmiRoom implements Party.Server {
+export default class OmiRoom {
   state: RoomState = fresh();
-  constructor(readonly room: Party.Room) {}
-  static async onBeforeConnect(request: Party.Request, lobby: Party.Lobby) {
+  constructor(readonly room: Runtime.RoomRuntime) {}
+  static async onBeforeConnect(request: Request, lobby: Runtime.Lobby) {
     const url = new URL(request.url);
     const token = url.searchParams.get("token");
     if (!token || !/^[a-f0-9]{64}$/.test(token))
@@ -48,7 +48,10 @@ export default class OmiRoom implements Party.Server {
     if (this.state.game.phase === "trick-end")
       await this.room.storage.setAlarm(Date.now() + 1200);
   }
-  async onConnect(connection: Party.Connection, ctx: Party.ConnectionContext) {
+  async onConnect(
+    connection: Runtime.Connection,
+    ctx: Runtime.ConnectionContext,
+  ) {
     this.state.room = this.room.id;
     const token = new URL(ctx.request.url).searchParams.get("token")!;
     const bytes = await crypto.subtle.digest(
@@ -61,7 +64,7 @@ export default class OmiRoom implements Party.Server {
     connection.setState({ key, lastMessage: 0 });
     this.broadcast();
   }
-  key(connection: Party.Connection) {
+  key(connection: Runtime.Connection) {
     return (connection.state as { key?: string } | null)?.key;
   }
   connected(key: string) {
@@ -109,7 +112,7 @@ export default class OmiRoom implements Party.Server {
     await this.room.storage.put("room", this.state);
     this.broadcast();
   }
-  async onMessage(message: string, connection: Party.Connection) {
+  async onMessage(message: string, connection: Runtime.Connection) {
     try {
       if (typeof message !== "string" || message.length > 1200)
         throw new Error("Message too large.");

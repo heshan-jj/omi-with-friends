@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import OmiRoom from "../party";
 import { newGame } from "../lib/game";
-import type * as Party from "partykit/server";
+import type * as Runtime from "../lib/room-runtime";
 function connection(key: string) {
   return {
     state: { key, lastMessage: 0 },
@@ -31,13 +31,13 @@ beforeEach(() => {
       put: async (k: string, v: unknown) => data.set(k, structuredClone(v)),
       setAlarm: async () => {},
     },
-  } as unknown as Party.Room);
+  } as unknown as Runtime.RoomRuntime);
 });
 async function send(c: ReturnType<typeof connection>, command: unknown) {
   c.state.lastMessage = 0;
   await server.onMessage(
     JSON.stringify(command),
-    c as unknown as Party.Connection,
+    c as unknown as Runtime.Connection,
   );
 }
 describe("room authority and privacy", () => {
@@ -118,12 +118,12 @@ describe("room authority and privacy", () => {
     const lobby = {
       id: "testroom",
       env: { ALLOWED_ORIGINS: "https://omi.example" },
-    } as unknown as Party.Lobby;
+    } as unknown as Runtime.Lobby;
     const request = (origin: string, token = "a".repeat(64)) =>
       new Request(
         `https://rooms.example/parties/main/testroom?token=${token}`,
         { headers: { Origin: origin } },
-      ) as unknown as Party.Request;
+      ) as unknown as Request;
     expect(
       (
         (await OmiRoom.onBeforeConnect(

@@ -1,6 +1,6 @@
 # Omi with friends
 
-A private, browser-based table for the Sri Lankan partnership card game Omi. Built with Next.js, TypeScript, Tailwind CSS, Motion, and PartyKit.
+A private, browser-based table for the Sri Lankan partnership card game Omi. Built with Next.js, TypeScript, Tailwind CSS, Motion, and PartyServer on Cloudflare Durable Objects.
 
 ## Play locally
 
@@ -15,7 +15,7 @@ npm run dev
 
 Open http://localhost:3000. Create a private table and share the room link. Each friend should use a separate browser profile or device. Take a seat, mark ready, and let the host deal. The first seated player is the host. Partners sit opposite: seats 1/3 versus 2/4. Nicknames are limited to 24 characters.
 
-`NEXT_PUBLIC_PARTYKIT_HOST` defaults to `localhost:1999` or `127.0.0.1:1999` only on those loopback hosts. For a remote preview, set it explicitly to a reachable PartyKit host. The service must allow the exact frontend origin.
+`NEXT_PUBLIC_PARTYKIT_HOST` defaults to `localhost:1999` or `127.0.0.1:1999` only on those loopback hosts. For a remote preview, set it explicitly to a reachable Cloudflare Worker host. The service must allow the exact frontend origin.
 
 ## What works
 
@@ -45,7 +45,7 @@ npm run test:e2e
 
 Browser tests cover home/join validation, rules, four separate players, an eight-trick hand, hidden-card payloads, page refresh, disconnect/pause/rejoin, mobile overflow, and the next deal. Linux cloud development uses `/usr/bin/chromium` when available; otherwise Playwright uses its installed browser. Install it with `npx playwright install chromium`.
 
-## Publish to GitHub, PartyKit, and Vercel
+## Publish to GitHub, Cloudflare, and Vercel
 
 ### 1. Push the repository
 
@@ -59,21 +59,21 @@ gh repo create omi-with-friends --private --source=. --remote=origin --push
 ### 2. Deploy the room service
 
 ```sh
-npx partykit login
+npx wrangler login --device
 npm run deploy:room
 ```
 
-The CLI returns the actual hostname, typically `omi-with-friends.<your-username>.partykit.dev`. Use the returned value, not an invented hostname. If the name is taken, change `name` in `partykit.json` before deploying. Room data is isolated by service and room ID.
+The CLI returns the actual Cloudflare Worker hostname. Use that returned value. Room data lives in SQLite-backed Durable Objects in your Cloudflare account. The `Main` binding preserves the default `/parties/main/:room` socket URL. The hosted PartyKit platform shut down on 23 October 2026; this repository uses its supported successor, PartyServer, directly on Cloudflare.
 
 ### 3. Deploy the frontend
 
-Import the GitHub repository into Vercel as a Next.js project. Set **NEXT_PUBLIC_PARTYKIT_HOST** to the deployed PartyKit hostname, without `https://`. Deploy. This variable is included at build time; redeploy when it changes.
+Import the GitHub repository into Vercel as a Next.js project. Set **NEXT_PUBLIC_PARTYKIT_HOST** to the deployed Cloudflare Worker hostname, without `https://`. Deploy. This variable is included at build time; redeploy when it changes.
 
 ### 4. Allow the frontend origin on the room service
 
 ```sh
-npx partykit env add ALLOWED_ORIGINS
-# Enter the exact deployed frontend origin, e.g. https://your-app.vercel.app
+# Set vars.ALLOWED_ORIGINS in wrangler.jsonc to the exact frontend origin.
+# Example: https://your-app.vercel.app
 npm run deploy:room
 ```
 
@@ -91,7 +91,8 @@ This first version has no bots, public matchmaking, accounts, chat, rankings, or
 
 - `lib/game.ts`: pure rules and cryptographically shuffled deck.
 - `lib/protocol.ts`: private room state and public view types.
-- `party/index.ts`: authority, persistence, sessions, presence, origin validation.
+- `party/index.ts`: transport-independent authority, persistence, sessions, presence, origin validation.
+- `party/worker.ts`: PartyServer adapter and Cloudflare Worker routing.
 - `app/ui.tsx`: home, lobby, table, and browser connection.
 - `app/globals.css`: responsive visual system.
 - `tests/`, `e2e/`: game/server unit checks and real browser integration tests.
