@@ -1,0 +1,399 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T14:59:25.443189+00:00",
+  "title": "Design System: Omi with friends",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0152 90.24)",
+          "oklch(27% 0.0152 90.24)",
+          "oklch(38% 0.0152 90.24)",
+          "oklch(49% 0.0152 90.24)",
+          "oklch(61% 0.0152 90.24)",
+          "oklch(72% 0.0152 90.24)",
+          "oklch(84% 0.0152 90.24)",
+          "oklch(95% 0.0152 90.24)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0494 170.31)",
+          "oklch(27% 0.0494 170.31)",
+          "oklch(38% 0.0494 170.31)",
+          "oklch(49% 0.0494 170.31)",
+          "oklch(61% 0.0494 170.31)",
+          "oklch(72% 0.0494 170.31)",
+          "oklch(84% 0.0494 170.31)",
+          "oklch(95% 0.0494 170.31)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0304 151.88)",
+          "oklch(27% 0.0304 151.88)",
+          "oklch(38% 0.0304 151.88)",
+          "oklch(49% 0.0304 151.88)",
+          "oklch(61% 0.0304 151.88)",
+          "oklch(72% 0.0304 151.88)",
+          "oklch(84% 0.0304 151.88)",
+          "oklch(95% 0.0304 151.88)"
+        ]
+      },
+      "green": {
+        "role": "primary",
+        "displayName": "Green",
+        "tonalRamp": [
+          "oklch(15% 0.0528 171.76)",
+          "oklch(27% 0.0528 171.76)",
+          "oklch(38% 0.0528 171.76)",
+          "oklch(49% 0.0528 171.76)",
+          "oklch(61% 0.0528 171.76)",
+          "oklch(72% 0.0528 171.76)",
+          "oklch(84% 0.0528 171.76)",
+          "oklch(95% 0.0528 171.76)"
+        ]
+      },
+      "deep": {
+        "role": "primary",
+        "displayName": "Deep",
+        "tonalRamp": [
+          "oklch(15% 0.0390 175.79)",
+          "oklch(27% 0.0390 175.79)",
+          "oklch(38% 0.0390 175.79)",
+          "oklch(49% 0.0390 175.79)",
+          "oklch(61% 0.0390 175.79)",
+          "oklch(72% 0.0390 175.79)",
+          "oklch(84% 0.0390 175.79)",
+          "oklch(95% 0.0390 175.79)"
+        ]
+      },
+      "gold": {
+        "role": "primary",
+        "displayName": "Gold",
+        "tonalRamp": [
+          "oklch(15% 0.1152 82.47)",
+          "oklch(27% 0.1152 82.47)",
+          "oklch(38% 0.1152 82.47)",
+          "oklch(49% 0.1152 82.47)",
+          "oklch(61% 0.1152 82.47)",
+          "oklch(72% 0.1152 82.47)",
+          "oklch(84% 0.1152 82.47)",
+          "oklch(95% 0.1152 82.47)"
+        ]
+      },
+      "red": {
+        "role": "secondary",
+        "displayName": "Red",
+        "tonalRamp": [
+          "oklch(15% 0.1510 30.20)",
+          "oklch(27% 0.1510 30.20)",
+          "oklch(38% 0.1510 30.20)",
+          "oklch(49% 0.1510 30.20)",
+          "oklch(61% 0.1510 30.20)",
+          "oklch(72% 0.1510 30.20)",
+          "oklch(84% 0.1510 30.20)",
+          "oklch(95% 0.1510 30.20)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "tonalRamp": [
+          "oklch(15% 0.0203 109.91)",
+          "oklch(27% 0.0203 109.91)",
+          "oklch(38% 0.0203 109.91)",
+          "oklch(49% 0.0203 109.91)",
+          "oklch(61% 0.0203 109.91)",
+          "oklch(72% 0.0203 109.91)",
+          "oklch(84% 0.0203 109.91)",
+          "oklch(95% 0.0203 109.91)"
+        ]
+      },
+      "card-face": {
+        "role": "neutral",
+        "displayName": "Card Face",
+        "tonalRamp": [
+          "oklch(15% 0.0142 84.58)",
+          "oklch(27% 0.0142 84.58)",
+          "oklch(38% 0.0142 84.58)",
+          "oklch(49% 0.0142 84.58)",
+          "oklch(61% 0.0142 84.58)",
+          "oklch(72% 0.0142 84.58)",
+          "oklch(84% 0.0142 84.58)",
+          "oklch(95% 0.0142 84.58)"
+        ]
+      },
+      "card-back": {
+        "role": "neutral",
+        "displayName": "Card Back",
+        "tonalRamp": [
+          "oklch(15% 0.0520 118.34)",
+          "oklch(27% 0.0520 118.34)",
+          "oklch(38% 0.0520 118.34)",
+          "oklch(49% 0.0520 118.34)",
+          "oklch(61% 0.0520 118.34)",
+          "oklch(72% 0.0520 118.34)",
+          "oklch(84% 0.0520 118.34)",
+          "oklch(95% 0.0520 118.34)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Primary Hover",
+        "tonalRamp": [
+          "oklch(15% 0.0662 165.48)",
+          "oklch(27% 0.0662 165.48)",
+          "oklch(38% 0.0662 165.48)",
+          "oklch(49% 0.0662 165.48)",
+          "oklch(61% 0.0662 165.48)",
+          "oklch(72% 0.0662 165.48)",
+          "oklch(84% 0.0662 165.48)",
+          "oklch(95% 0.0662 165.48)"
+        ]
+      },
+      "gold-hover": {
+        "role": "primary",
+        "displayName": "Gold Hover",
+        "tonalRamp": [
+          "oklch(15% 0.1061 82.32)",
+          "oklch(27% 0.1061 82.32)",
+          "oklch(38% 0.1061 82.32)",
+          "oklch(49% 0.1061 82.32)",
+          "oklch(61% 0.1061 82.32)",
+          "oklch(72% 0.1061 82.32)",
+          "oklch(84% 0.1061 82.32)",
+          "oklch(95% 0.1061 82.32)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Entry headline."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Table status."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Rules-dialog heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base interface copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Name field labels."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Main action labels."
+      },
+      "card-rank": {
+        "displayName": "Card rank",
+        "purpose": "Playing-card corners."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 6px 10px #082e2530",
+        "purpose": "Ordinary playing cards."
+      },
+      {
+        "name": "preview-felt",
+        "value": "0 24px 42px -24px #102c3066",
+        "purpose": "Entry felt."
+      },
+      {
+        "name": "game-table",
+        "value": "0 20px 45px #04191250",
+        "purpose": "Live felt."
+      },
+      {
+        "name": "avatar",
+        "value": "0 4px 12px #0003",
+        "purpose": "Occupied table seats."
+      },
+      {
+        "name": "playable-card",
+        "value": "0 6px 15px #021b2066, 0 -2px 0 var(--gold)",
+        "purpose": "Legal hand-card emphasis."
+      },
+      {
+        "name": "dialog",
+        "value": "0 30px 90px #0006",
+        "purpose": "Rules modal."
+      }
+    ],
+    "motion": [
+      {
+        "name": "button-transition",
+        "value": "background 0.18s, transform 0.18s",
+        "purpose": "Enabled action feedback."
+      },
+      {
+        "name": "button-lift",
+        "value": "translateY(-2px)",
+        "purpose": "Enabled standard-button hover."
+      },
+      {
+        "name": "hand-lift",
+        "value": "-14px",
+        "purpose": "Hand-card hover and focus, Motion preference aware."
+      },
+      {
+        "name": "hand-stagger",
+        "value": "0.035s",
+        "purpose": "Per-card entrance delay."
+      },
+      {
+        "name": "trick-entrance",
+        "value": "opacity: 0; y: 12; rotate: -4 → opacity: 1; y: 0; rotate: 0",
+        "purpose": "Motion entrance, omitted for reduced motion."
+      },
+      {
+        "name": "hand-entrance",
+        "value": "opacity: 0; y: 20 → opacity: 1; y: 0",
+        "purpose": "Motion entrance, omitted for reduced motion."
+      },
+      {
+        "name": "loading",
+        "value": "spin 1.2s linear infinite",
+        "purpose": "CSS spinner; disabled by reduced-motion media query."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Remove CSS animations/transitions, button hover transform and Motion entrances/lifts."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "(min-width: 1500px)"
+      },
+      {
+        "name": "compact-desktop",
+        "value": "(max-width: 900px)"
+      },
+      {
+        "name": "mobile",
+        "value": "(max-width: 640px)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action on its corresponding paper or table surface.",
+      "html": "<button class=\"ds-primary\">Create a table</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 22px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s,transform .18s;font-family:var(--sans,\"Manrope\",sans-serif);background:var(--green,#123e32);color:var(--paper,#f4f0e5);}.ds-primary:hover:not(:disabled){background:#205541;transform:translateY(-2px);}.ds-primary:focus-visible{outline:3px solid #c28526;outline-offset:5px;}.ds-primary:disabled{opacity:.4;cursor:default;}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}.ds-primary:hover:not(:disabled){transform:none;}}"
+    },
+    {
+      "name": "Gold button",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "Main action on its corresponding paper or table surface.",
+      "html": "<button class=\"ds-gold\">Deal the cards</button>",
+      "css": ".ds-gold{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 22px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s,transform .18s;font-family:var(--sans,\"Manrope\",sans-serif);background:var(--gold,#ecc06b);color:var(--deep,#0c2b24);}.ds-gold:hover:not(:disabled){background:#f7ce81;transform:translateY(-2px);}.ds-gold:focus-visible{outline:3px solid #c28526;outline-offset:5px;}.ds-gold:disabled{opacity:.4;cursor:default;}@media(prefers-reduced-motion:reduce){.ds-gold{transition:none;}.ds-gold:hover:not(:disabled){transform:none;}}"
+    },
+    {
+      "name": "Ready button",
+      "kind": "button",
+      "refersTo": "button-ready",
+      "description": "Confirmed readiness at the table.",
+      "html": "<button class=\"ds-ready\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg> You’re ready</button>",
+      "css": ".ds-ready{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 22px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s,transform .18s;font-family:var(--sans,\"Manrope\",sans-serif);min-height:44px;padding:11px 18px;font-size:11px;background:#b7d6b324;color:#c5e5ba;outline:1px solid #b7d6b340;}.ds-ready:hover:not(:disabled){transform:translateY(-2px);}.ds-ready:focus-visible{outline:3px solid var(--gold,#ecc06b);outline-offset:5px;}.ds-ready:disabled{opacity:.4;cursor:default;}@media(prefers-reduced-motion:reduce){.ds-ready{transition:none;}.ds-ready:hover:not(:disabled){transform:none;}}"
+    },
+    {
+      "name": "Text button",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Lightweight rules or secondary action.",
+      "html": "<button class=\"ds-text\">How to play</button>",
+      "css": ".ds-text{display:inline-flex;align-items:center;gap:8px;padding:9px 0;border:0;background:none;color:var(--ink,#173e32);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans,\"Manrope\",sans-serif);}.ds-text:hover{text-decoration:underline;text-underline-offset:5px;}.ds-text:focus-visible{outline:3px solid #c28526;outline-offset:5px;}"
+    },
+    {
+      "name": "Invite button",
+      "kind": "button",
+      "refersTo": "button-invite",
+      "description": "Compact invitation action for the dark header.",
+      "html": "<button class=\"ds-invite\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M10 13a5 5 0 0 0 7 .5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7\"/></svg>Invite friends</button>",
+      "css": ".ds-invite{display:flex;align-items:center;gap:8px;background:#ecf0db0d;color:#e6ebd8;border:1px solid #dfe7cb2b;border-radius:7px;font-size:11px;font-weight:600;padding:10px 14px;cursor:pointer;font-family:var(--sans,\"Manrope\",sans-serif);}.ds-invite:hover{background:#ecf0db18;}.ds-invite:focus-visible{outline:3px solid var(--gold,#ecc06b);outline-offset:5px;}"
+    },
+    {
+      "name": "Icon button",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "Circular help/close action.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Close rules\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"m18 6-12 12M6 6l12 12\"/></svg></button>",
+      "css": ".ds-icon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink,#173e32);cursor:pointer;}.ds-icon:hover{background:#173e3212;}.ds-icon:focus-visible{outline:3px solid #c28526;outline-offset:5px;}"
+    },
+    {
+      "name": "Name field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labeled nickname field on paper.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-name\">Your name</label><input class=\"ds-field\" id=\"ds-name\" placeholder=\"What should we call you?\" autocomplete=\"nickname\">",
+      "css": ".ds-field-label{display:block;margin-bottom:9px;color:var(--ink,#173e32);font-size:12px;font-weight:700;font-family:var(--sans,\"Manrope\",sans-serif);}.ds-field{min-width:0;border:1px solid var(--line,#d7d8c9);border-radius:9px;outline:none;background:rgba(255,255,255,.45);color:var(--ink,#173e32);padding:15px 17px;font-size:14px;caret-color:var(--ink,#173e32);font-family:var(--sans,\"Manrope\",sans-serif);}.ds-field::placeholder{color:#737e71;}.ds-field:focus,.ds-field:focus-visible{border-color:var(--green,#123e32);box-shadow:0 0 0 3px #173e321a;}"
+    },
+    {
+      "name": "Brand navigation",
+      "kind": "nav",
+      "refersTo": "brand",
+      "description": "Home link with serif wordmark and warm dot.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Home\"><a class=\"ds-brand\" href=\"/\" aria-label=\"Omi home\">omi<span class=\"ds-dot\">.</span></a></nav>",
+      "css": ".ds-brand{display:inline-block;font-family:var(--serif,\"Bodoni Moda\",Georgia,serif);font-size:58px;letter-spacing:-.04em;font-weight:600;line-height:1;color:var(--ink,#173e32);text-decoration:none;}.ds-dot{color:#a76729;}.ds-brand:focus-visible{outline:3px solid #c28526;outline-offset:5px;}@media(max-width:640px){.ds-brand{font-size:49px;}}"
+    },
+    {
+      "name": "Playing card",
+      "kind": "card",
+      "refersTo": "playing-card",
+      "description": "Warm face with mirrored rank and suit corners.",
+      "html": "<span class=\"ds-card\"><span class=\"ds-corner\"><b>A</b><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 21C9 18 2 13 2 7.5 2 2 9 1 12 6c3-5 10-4 10 1.5C22 13 15 18 12 21Z\"/></svg></span><span class=\"ds-pip\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 21C9 18 2 13 2 7.5 2 2 9 1 12 6c3-5 10-4 10 1.5C22 13 15 18 12 21Z\"/></svg></span><span class=\"ds-corner ds-bottom\"><b>A</b><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 21C9 18 2 13 2 7.5 2 2 9 1 12 6c3-5 10-4 10 1.5C22 13 15 18 12 21Z\"/></svg></span></span>",
+      "css": ".ds-card{display:block;position:relative;width:96px;height:138px;border-radius:9px;background:#fffaf0;color:var(--red,#b64435);box-shadow:0 6px 10px #082e2530;user-select:none;}.ds-corner{position:absolute;top:8px;left:9px;display:flex;flex-direction:column;align-items:center;gap:2px;}.ds-corner b{font-family:var(--serif,\"Bodoni Moda\",Georgia,serif);font-size:22px;font-weight:600;line-height:1.1;}.ds-corner svg{width:13px;height:13px;}.ds-bottom{top:auto;left:auto;bottom:8px;right:9px;transform:rotate(180deg);}.ds-pip{position:absolute;width:39px;height:39px;left:50%;top:50%;transform:translate(-50%,-50%);}.ds-pip svg{width:100%;height:100%;}"
+    },
+    {
+      "name": "Card back",
+      "kind": "card",
+      "refersTo": "playing-card-back",
+      "description": "Concealed opponent cards and decorative hidden hands.",
+      "html": "<span class=\"ds-back\" aria-label=\"Face-down card\"><span class=\"ds-back-mark\">o</span></span>",
+      "css": ".ds-back{box-sizing:border-box;display:block;position:relative;width:96px;height:138px;border-radius:9px;background:#c9d2ac;padding:5px;box-shadow:0 6px 10px #082e2530;}.ds-back:before{content:\"\";position:absolute;inset:5px;border:1px solid #32503e;border-radius:5px;background:repeating-linear-gradient(45deg,transparent 0 5px,#32503e24 5px 6px);}.ds-back-mark{position:absolute;inset:0;display:grid;place-items:center;font:38px var(--serif,\"Bodoni Moda\",Georgia,serif);color:#32503e;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The private card table",
+    "overview": "The private card table is the established visual anchor: deep green felt, warm ivory cards, saffron actions, compact humanist controls and expressive serif display. Rounded table silhouettes and overlapping cards provide the material character.\n\nThe interface prioritizes readable cards and clear state. The light entry surface and dark playing surface share the same typography and control shapes; contextual gold emphasis connects invitations, readiness and legal play.",
+    "keyCharacteristics": [
+      "Warm paper against deep green felt.",
+      "Serif expression paired with compact sans-serif controls.",
+      "Recognizable card faces, overlapping hands and anchored seats.",
+      "Visible keyboard focus and reduced-motion support."
+    ],
+    "rules": [],
+    "dos": [
+      "Do use the established serif for display text and card ranks, and the sans-serif for controls and metadata.",
+      "Do preserve the distinction between red suits and dark suits, including their suit shapes.",
+      "Do keep visible focus outlines and the reduced-motion behavior on interactive cards and buttons.",
+      "Do keep game status, team scores and player state visually distinct from the playing cards."
+    ],
+    "donts": [
+      "Don't expose opponents’ card faces; use the patterned backs.",
+      "Don't replace disabled hand-card dimming with the general button opacity treatment.",
+      "Don't add decorative motion that bypasses the existing reduced-motion preference."
+    ]
+  }
+}

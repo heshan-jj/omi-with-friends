@@ -1,0 +1,8 @@
+.next/
+node_modules/
+.party-state/
+.partykit/
+.impeccable/review/
+playwright-report/
+test-results/
+package-lock.json

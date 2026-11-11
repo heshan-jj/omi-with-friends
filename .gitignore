@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.vercel/
+.party-state/
+.partykit/
+.env*
+!.env.example
+playwright-report/
+test-results/
+*.tsbuildinfo
+.impeccable/review/
