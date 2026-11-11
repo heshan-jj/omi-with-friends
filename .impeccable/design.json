@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-11T14:59:25.443189+00:00",
+  "generatedAt": "2026-11-11T18:18:27.328662+00:00",
   "title": "Design System: Omi with friends",
   "extensions": {
     "colorMeta": {
@@ -237,44 +237,69 @@
     ],
     "motion": [
       {
-        "name": "button-transition",
-        "value": "background 0.18s, transform 0.18s",
-        "purpose": "Enabled action feedback."
+        "name": "card-ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Card arrivals, layout continuity and compact state changes."
       },
       {
-        "name": "button-lift",
-        "value": "translateY(-2px)",
-        "purpose": "Enabled standard-button hover."
+        "name": "hand-deal",
+        "value": "0.48s; stagger 0.045s",
+        "purpose": "Fan cards from the deck into the hand, including the second four-card batch."
+      },
+      {
+        "name": "card-flight",
+        "value": "0.4s; shared layout 0.42s",
+        "purpose": "Local cards share their geometry with the table; opponent cards enter from their seat; completed tricks collect toward their winner."
+      },
+      {
+        "name": "hand-reflow",
+        "value": "0.25s",
+        "purpose": "Close gaps as cards leave the hand."
       },
       {
         "name": "hand-lift",
-        "value": "-14px",
-        "purpose": "Hand-card hover and focus, Motion preference aware."
+        "value": "-18px; tap scale 0.95",
+        "purpose": "Playable card hover, focus and press feedback."
       },
       {
-        "name": "hand-stagger",
-        "value": "0.035s",
-        "purpose": "Per-card entrance delay."
+        "name": "home-deal",
+        "value": "one sequence, approximately 1.3s",
+        "purpose": "Demonstrate dealing once when the home page appears."
       },
       {
-        "name": "trick-entrance",
-        "value": "opacity: 0; y: 12; rotate: -4 → opacity: 1; y: 0; rotate: 0",
-        "purpose": "Motion entrance, omitted for reduced motion."
+        "name": "status-transition",
+        "value": "0.12s",
+        "purpose": "Quick headline continuity without blocking input."
       },
       {
-        "name": "hand-entrance",
-        "value": "opacity: 0; y: 20 → opacity: 1; y: 0",
-        "purpose": "Motion entrance, omitted for reduced motion."
+        "name": "score-transition",
+        "value": "0.24s",
+        "purpose": "Make earned tokens visible."
+      },
+      {
+        "name": "trump-reveal",
+        "value": "0.32s",
+        "purpose": "Reveal the chosen suit with a bounded blur and scale transition."
+      },
+      {
+        "name": "turn-ripple",
+        "value": "0.85s, twice",
+        "purpose": "Draw attention to the active seat, then stop."
+      },
+      {
+        "name": "win-burst",
+        "value": "1.15s, stagger capped at 0.175s",
+        "purpose": "One clipped, pointer-transparent celebration per decisive hand."
       },
       {
         "name": "loading",
         "value": "spin 1.2s linear infinite",
-        "purpose": "CSS spinner; disabled by reduced-motion media query."
+        "purpose": "Connection progress, disabled by reduced motion."
       },
       {
         "name": "reduced-motion",
         "value": "prefers-reduced-motion: reduce",
-        "purpose": "Remove CSS animations/transitions, button hover transform and Motion entrances/lifts."
+        "purpose": "Remove travel, reflow, CSS animations and confetti; retain explicit state feedback."
       }
     ],
     "breakpoints": [
@@ -314,7 +339,7 @@
       "kind": "button",
       "refersTo": "button-ready",
       "description": "Confirmed readiness at the table.",
-      "html": "<button class=\"ds-ready\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg> You’re ready</button>",
+      "html": "<button class=\"ds-ready\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg> You\u2019re ready</button>",
       "css": ".ds-ready{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 22px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s,transform .18s;font-family:var(--sans,\"Manrope\",sans-serif);min-height:44px;padding:11px 18px;font-size:11px;background:#b7d6b324;color:#c5e5ba;outline:1px solid #b7d6b340;}.ds-ready:hover:not(:disabled){transform:translateY(-2px);}.ds-ready:focus-visible{outline:3px solid var(--gold,#ecc06b);outline-offset:5px;}.ds-ready:disabled{opacity:.4;cursor:default;}@media(prefers-reduced-motion:reduce){.ds-ready{transition:none;}.ds-ready:hover:not(:disabled){transform:none;}}"
     },
     {
@@ -391,7 +416,7 @@
       "Do keep game status, team scores and player state visually distinct from the playing cards."
     ],
     "donts": [
-      "Don't expose opponents’ card faces; use the patterned backs.",
+      "Don't expose opponents\u2019 card faces; use the patterned backs.",
       "Don't replace disabled hand-card dimming with the general button opacity treatment.",
       "Don't add decorative motion that bypasses the existing reduced-motion preference."
     ]

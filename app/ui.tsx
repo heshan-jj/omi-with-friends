@@ -3,13 +3,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import PartySocket from "partysocket";
-import { motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from "motion/react";
+import {
+  AnimatedNumber,
+  CARD_EASE,
+  TrickMotionCard,
+  WinCelebration,
+  type TableSide,
+} from "./card-motion";
 import {
   ArrowRight,
   ArrowUpRight,
   Check,
-  ChevronDown,
-  Copy,
   DoorOpen,
   HelpCircle,
   Link2,
@@ -155,7 +165,10 @@ function Rules({ close }: { close: () => void }) {
 }
 function Preview() {
   return (
-    <div className="table-preview" aria-label="Illustration of an Omi table">
+    <div
+      className="table-preview motion-preview"
+      aria-label="Illustration of an Omi table"
+    >
       <span className="preview-caption">
         <span className="tiny-dot" /> Your next catch-up, dealt.
       </span>
@@ -189,6 +202,7 @@ function Preview() {
               key={c.suit}
               style={{
                 transform: `translateY(${Math.abs(i - 1.5) * 9}px) rotate(${(i - 1.5) * 10}deg)`,
+                animationDelay: `${0.42 + i * 0.065}s`,
               }}
             >
               <PlayingCard card={c} />
@@ -478,8 +492,8 @@ export function Room({ code }: { code: string }) {
   const legal = v
     ? new Set(legalCards(v.hand, v.trick).map((c) => c.id))
     : new Set<string>();
-  const seatPosition = (seat: number) =>
-    ["south", "east", "north", "west"][(seat - (you ?? 0) + 4) % 4];
+  const seatPosition = (seat: number): TableSide =>
+    (["south", "east", "north", "west"] as const)[(seat - (you ?? 0) + 4) % 4];
   let headline = "Finding your table…";
   let subline = "Pull up a chair. We’ll be right with you.";
   if (v) {
@@ -529,383 +543,504 @@ export function Room({ code }: { code: string }) {
     subline = "Keep this tab open. We’re holding your seat.";
   }
   return (
-    <div className="room-page">
-      <header className="room-header">
-        <div className="brand-lockup">
-          <Brand table />
-          <span>Friends’ table</span>
-        </div>
-        <div className="room-header-actions">
-          <span
-            className={`connection-dot ${online ? "online" : ""}`}
-            aria-label={online ? "Connected" : "Not connected"}
-          />
-          <span className="room-code">{code.toUpperCase()}</span>
-          <button className="invite-button" onClick={copy}>
-            {copied ? <Check size={16} /> : <Link2 size={16} />}
-            <span>{copied ? "Link copied" : "Invite friends"}</span>
-          </button>
-          <button
-            className="icon-button"
-            onClick={() => setRules(true)}
-            aria-label="How to play"
-          >
-            <HelpCircle size={20} />
-          </button>
-        </div>
-      </header>
-      <main className="room-main">
-        <div className="table-status" aria-live="polite">
-          <h1>{headline}</h1>
-          <p>{subline}</p>
-          {copyError && (
-            <p className="copy-fallback">
-              Copy this invite:{" "}
-              <input
-                aria-label="Invite link"
-                value={typeof location === "undefined" ? "" : location.href}
-                readOnly
-                onFocus={(e) => e.target.select()}
-              />
-            </p>
-          )}
-        </div>
-        {error && (
-          <div className="room-error" role="alert">
-            {error}
-            <button onClick={() => setError("")} aria-label="Dismiss error">
-              <X size={16} />
+    <LayoutGroup id={code}>
+      <div className="room-page">
+        <header className="room-header">
+          <div className="brand-lockup">
+            <Brand table />
+            <span>Friends’ table</span>
+          </div>
+          <div className="room-header-actions">
+            <span
+              className={`connection-dot ${online ? "online" : ""}`}
+              aria-label={online ? "Connected" : "Not connected"}
+            />
+            <span className="room-code">{code.toUpperCase()}</span>
+            <button className="invite-button" onClick={copy}>
+              {copied ? <Check size={16} /> : <Link2 size={16} />}
+              <span>{copied ? "Link copied" : "Invite friends"}</span>
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => setRules(true)}
+              aria-label="How to play"
+            >
+              <HelpCircle size={20} />
             </button>
           </div>
-        )}
-        {v && (
-          <>
-            <div className="score-strip">
-              <span
-                className={you === null || you % 2 === 0 ? "your-team" : ""}
+        </header>
+        <main className="room-main">
+          <div className="table-status" aria-live="polite">
+            <AnimatePresence initial={false} mode="wait">
+              <motion.h1
+                key={headline}
+                initial={reduce ? false : { opacity: 0, y: 7 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: reduce ? 0 : -5 }}
+                transition={{ duration: reduce ? 0 : 0.12, ease: CARD_EASE }}
               >
-                Team 1 <b>{v.scores[0]}</b>
-                <small>{v.tricks[0]} tricks</small>
-              </span>
-              <span className="score-target">
-                {lobby ? "First to 10" : `Hand ${v.handNumber}`}
-                <small>
-                  {v.pending
-                    ? `${v.pending} bonus token${v.pending > 1 ? "s" : ""} carried`
-                    : "10 tokens to win"}
-                </small>
-              </span>
-              <span
-                className={you !== null && you % 2 === 1 ? "your-team" : ""}
-              >
-                Team 2 <b>{v.scores[1]}</b>
-                <small>{v.tricks[1]} tricks</small>
-              </span>
-            </div>
-            <div className={`game-table ${lobby ? "is-lobby" : ""}`}>
-              <div className="table-inner-line" />
-              {v.seats.map((player, seat) => (
-                <div
-                  key={seat}
-                  className={`player-seat ${seatPosition(seat)} ${!lobby && v.turn === seat ? "has-turn" : ""}`}
-                >
-                  {player ? (
-                    <>
-                      <span
-                        className={`avatar ${seat % 2 === 0 ? "team-a" : "team-b"}`}
-                      >
-                        {player.name.slice(0, 1).toUpperCase()}
-                        {!player.connected && <WifiOff size={12} />}
-                      </span>
-                      <span className="player-name">
-                        {player.name}
-                        {seat === you && <small>you</small>}
-                      </span>
-                      <span className="player-detail">
-                        {lobby ? (
-                          player.ready ? (
-                            <>
-                              <Check size={12} /> Ready
-                            </>
-                          ) : (
-                            "Not ready"
-                          )
-                        ) : (
-                          `Team ${(seat % 2) + 1}${v.dealer === seat ? " · Dealer" : ""}`
-                        )}
-                      </span>
-                      {!lobby && seat !== you && (
-                        <div
-                          className="opponent-hand"
-                          aria-label={`${v.counts[seat]} cards`}
-                        >
-                          {Array.from(
-                            { length: Math.min(v.counts[seat], 5) },
-                            (_, i) => (
-                              <PlayingCard key={i} back small />
-                            ),
-                          )}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      className="empty-seat"
-                      disabled={!lobby || !online}
-                      onClick={() => claim(seat)}
-                      aria-label={`Take seat ${seat + 1}, Team ${(seat % 2) + 1}`}
-                    >
-                      <Users size={22} />
-                      <span>Sit here</span>
-                      <small>Team {(seat % 2) + 1}</small>
-                    </button>
-                  )}
-                </div>
-              ))}
-              <div className="table-center">
-                {lobby ? (
-                  <div className="lobby-center">
-                    <span className="table-logo">omi.</span>
-                    <span className="seats-filled">
-                      {v.seats.filter(Boolean).length} of 4 friends here
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <div className="trump-indicator">
-                      {v.trump ? (
-                        <>
-                          <SuitIcon suit={v.trump} />
-                          <span>{v.trump} trump</span>
-                        </>
-                      ) : (
-                        <span>Trumps to be called</span>
-                      )}
-                    </div>
-                    <div className="trick-area">
-                      {v.trick.map((p) => (
-                        <motion.div
-                          key={p.card.id}
-                          initial={
-                            reduce ? false : { opacity: 0, y: 12, rotate: -4 }
-                          }
-                          animate={{ opacity: 1, y: 0, rotate: 0 }}
-                          className={`trick-card from-${seatPosition(p.seat)}`}
-                        >
-                          <PlayingCard card={p.card} />
-                          <span>{v.seats[p.seat]?.name}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-                    {v.phase === "play" && v.trick.length === 0 && (
-                      <span className="empty-trick-note">
-                        {myTurn ? "Your lead" : "Waiting for the lead"}
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-            {lobby ? (
-              <section className="lobby-controls">
-                {you === null ? (
-                  <div className="name-inline">
-                    <label htmlFor="table-name">Your name</label>
-                    <input
-                      id="table-name"
-                      maxLength={24}
-                      autoComplete="nickname"
-                      placeholder="What should we call you?"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <p>Choose any empty seat above to join.</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="ready-actions">
-                      <button
-                        className={`button ${v.seats[you]?.ready ? "ready-button" : "gold-button"}`}
-                        disabled={!online}
-                        onClick={() => send({ type: "ready" })}
-                      >
-                        {v.seats[you]?.ready ? (
-                          <>
-                            <Check size={18} /> You’re ready
-                          </>
-                        ) : (
-                          <>
-                            I’m ready <Check size={18} />
-                          </>
-                        )}
-                      </button>
-                      {v.host && (
-                        <button
-                          className="button gold-button"
-                          disabled={!allReady || !online}
-                          onClick={() => send({ type: "start" })}
-                        >
-                          Deal the cards <ArrowRight size={18} />
-                        </button>
-                      )}
-                    </div>
-                    <p>
-                      {v.host
-                        ? "Everyone ready? Deal when all four friends are here."
-                        : "The host will deal once everyone is ready."}
-                    </p>
-                    <button
-                      className="text-button leave-seat"
-                      onClick={() => send({ type: "leave" })}
-                    >
-                      <DoorOpen size={14} /> Leave seat
-                    </button>
-                  </>
-                )}
-              </section>
-            ) : (
-              <section className="hand-zone">
-                {v.phase === "trump" && v.caller === you && (
-                  <div className="trump-choice" aria-label="Choose trump suit">
-                    {SUITS.map((s) => (
-                      <button
-                        key={s}
-                        disabled={!online || v.paused}
-                        onClick={() => send({ type: "trump", suit: s })}
-                      >
-                        <SuitIcon suit={s} />
-                        <span>{s}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {v.phase === "hand-end" || v.phase === "finished" ? (
-                  <div className="hand-result">
-                    <strong>
-                      {v.result?.winner === null
-                        ? `${v.pending} bonus token${v.pending > 1 ? "s" : ""} carried`
-                        : `+${v.result?.tokens} tokens to Team ${(v.result?.winner ?? 0) + 1}`}
-                    </strong>
-                    <span>{v.result?.tricks.join(" – ")} tricks</span>
-                    {v.host ? (
-                      <button
-                        className="button gold-button"
-                        disabled={!online || v.paused}
-                        onClick={() =>
-                          send({
-                            type: v.phase === "finished" ? "rematch" : "next",
-                          })
-                        }
-                      >
-                        {v.phase === "finished" ? (
-                          <>
-                            <RotateCcw size={17} /> Play again
-                          </>
-                        ) : (
-                          <>
-                            Next hand <ArrowRight size={17} />
-                          </>
-                        )}
-                      </button>
-                    ) : (
-                      <p>
-                        Waiting for the host to{" "}
-                        {v.phase === "finished"
-                          ? "start a rematch"
-                          : "deal the next hand"}
-                        .
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div className="hand-label">
-                      <span>
-                        {you === null
-                          ? "You’re watching"
-                          : v.phase === "trump"
-                            ? "Your first four"
-                            : "Your hand"}
-                      </span>
-                      <span>
-                        {v.phase === "trump"
-                          ? "4 more after the call"
-                          : myTurn
-                            ? "Choose a card to play"
-                            : you !== null
-                              ? `Team ${(you % 2) + 1} · ${v.hand.length} cards`
-                              : ""}
-                      </span>
-                    </div>
-                    <div className="your-hand">
-                      {[...v.hand]
-                        .sort(
-                          (a, b) =>
-                            SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit) ||
-                            b.rank - a.rank,
-                        )
-                        .map((c, i) => (
-                          <motion.button
-                            key={c.id}
-                            className={`hand-card ${myTurn && legal.has(c.id) ? "playable" : ""}`}
-                            disabled={!myTurn || !legal.has(c.id)}
-                            onClick={() => send({ type: "play", card: c.id })}
-                            aria-label={`Play ${rankLabel(c.rank)} of ${c.suit}`}
-                            initial={reduce ? false : { opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: reduce ? 0 : i * 0.035 }}
-                            whileHover={reduce ? undefined : { y: -14 }}
-                            whileFocus={reduce ? undefined : { y: -14 }}
-                          >
-                            <PlayingCard card={c} />
-                          </motion.button>
-                        ))}
-                    </div>
-                  </>
-                )}
-              </section>
-            )}
-          </>
-        )}
-        {!v && (
-          <div className="connection-placeholder">
-            {connection === "unavailable" ? (
-              <>
-                <WifiOff size={36} />
-                <Link href="/" className="button gold-button">
-                  Back to Omi <ArrowRight size={17} />
-                </Link>
-              </>
-            ) : (
-              <>
-                <LoaderCircle size={30} className="spin" />
-                <p>
-                  {connection === "disconnected"
-                    ? "Check your connection, or try again."
-                    : "Setting the table…"}
-                </p>
-                {connection === "disconnected" && (
-                  <button
-                    className="button gold-button"
-                    onClick={() => location.reload()}
-                  >
-                    Try again <RotateCcw size={17} />
-                  </button>
-                )}
-              </>
+                {headline}
+              </motion.h1>
+            </AnimatePresence>
+            <p>{subline}</p>
+            {copyError && (
+              <p className="copy-fallback">
+                Copy this invite:{" "}
+                <input
+                  aria-label="Invite link"
+                  value={typeof location === "undefined" ? "" : location.href}
+                  readOnly
+                  onFocus={(e) => e.target.select()}
+                />
+              </p>
             )}
           </div>
-        )}
-      </main>
-      <footer className="room-footer">
-        <span>
-          <span className="tiny-dot" /> Private table
-        </span>
-        <button className="text-button" onClick={() => setRules(true)}>
-          A little help with the rules <ArrowUpRight size={14} />
-        </button>
-      </footer>
-      {rules && <Rules close={() => setRules(false)} />}
-    </div>
+          {error && (
+            <div className="room-error" role="alert">
+              {error}
+              <button onClick={() => setError("")} aria-label="Dismiss error">
+                <X size={16} />
+              </button>
+            </div>
+          )}
+          {v && (
+            <>
+              <div className="score-strip">
+                <span
+                  className={you === null || you % 2 === 0 ? "your-team" : ""}
+                >
+                  Team 1{" "}
+                  <b>
+                    <AnimatedNumber value={v.scores[0]} reduce={!!reduce} />
+                  </b>
+                  <small>{v.tricks[0]} tricks</small>
+                </span>
+                <span className="score-target">
+                  {lobby ? "First to 10" : `Hand ${v.handNumber}`}
+                  <small>
+                    {v.pending
+                      ? `${v.pending} bonus token${v.pending > 1 ? "s" : ""} carried`
+                      : "10 tokens to win"}
+                  </small>
+                </span>
+                <span
+                  className={you !== null && you % 2 === 1 ? "your-team" : ""}
+                >
+                  Team 2{" "}
+                  <b>
+                    <AnimatedNumber value={v.scores[1]} reduce={!!reduce} />
+                  </b>
+                  <small>{v.tricks[1]} tricks</small>
+                </span>
+              </div>
+              <div className={`game-table ${lobby ? "is-lobby" : ""}`}>
+                <div className="table-inner-line" />
+                {v.seats.map((player, seat) => (
+                  <div
+                    key={seat}
+                    className={`player-seat ${seatPosition(seat)} ${!lobby && v.turn === seat ? "has-turn" : ""}`}
+                  >
+                    {player ? (
+                      <>
+                        <motion.span
+                          key={`${seat}-${player.name}`}
+                          initial={
+                            reduce
+                              ? false
+                              : { scale: 0.65, opacity: 0, rotate: -10 }
+                          }
+                          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                          transition={{
+                            duration: reduce ? 0 : 0.3,
+                            ease: CARD_EASE,
+                          }}
+                          className={`avatar ${seat % 2 === 0 ? "team-a" : "team-b"}`}
+                        >
+                          {player.name.slice(0, 1).toUpperCase()}
+                          {!player.connected && <WifiOff size={12} />}
+                        </motion.span>
+                        <span className="player-name">
+                          {player.name}
+                          {seat === you && <small>you</small>}
+                        </span>
+                        <span className="player-detail">
+                          {lobby ? (
+                            player.ready ? (
+                              <>
+                                <Check size={12} /> Ready
+                              </>
+                            ) : (
+                              "Not ready"
+                            )
+                          ) : (
+                            `Team ${(seat % 2) + 1}${v.dealer === seat ? " · Dealer" : ""}`
+                          )}
+                        </span>
+                        {!lobby && seat !== you && (
+                          <div
+                            className="opponent-hand"
+                            aria-label={`${v.counts[seat]} cards`}
+                          >
+                            {Array.from(
+                              { length: Math.min(v.counts[seat], 5) },
+                              (_, i) => (
+                                <PlayingCard key={i} back small />
+                              ),
+                            )}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        className="empty-seat"
+                        disabled={!lobby || !online}
+                        onClick={() => claim(seat)}
+                        aria-label={`Take seat ${seat + 1}, Team ${(seat % 2) + 1}`}
+                      >
+                        <Users size={22} />
+                        <span>Sit here</span>
+                        <small>Team {(seat % 2) + 1}</small>
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <div className="table-center">
+                  {lobby ? (
+                    <div className="lobby-center">
+                      <span className="table-logo">omi.</span>
+                      <span className="seats-filled">
+                        {v.seats.filter(Boolean).length} of 4 friends here
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <motion.div
+                        className="trump-indicator"
+                        key={v.trump ?? "no-trump"}
+                        initial={
+                          reduce
+                            ? false
+                            : { opacity: 0, scale: 0.8, filter: "blur(5px)" }
+                        }
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        transition={{
+                          duration: reduce ? 0 : 0.32,
+                          ease: CARD_EASE,
+                        }}
+                      >
+                        {v.trump ? (
+                          <>
+                            <SuitIcon suit={v.trump} />
+                            <span>{v.trump} trump</span>
+                          </>
+                        ) : (
+                          <span>Trumps to be called</span>
+                        )}
+                      </motion.div>
+                      <div className="trick-area">
+                        <AnimatePresence>
+                          {v.trick.map((p) => (
+                            <TrickMotionCard
+                              key={`${v.handNumber}-${p.card.id}`}
+                              id={`${v.handNumber}-${p.card.id}`}
+                              side={seatPosition(p.seat)}
+                              winner={
+                                v.lastWinner === null
+                                  ? null
+                                  : seatPosition(v.lastWinner)
+                              }
+                              winning={
+                                v.phase === "trick-end" &&
+                                p.seat === v.lastWinner
+                              }
+                              reduce={!!reduce}
+                            >
+                              <PlayingCard card={p.card} />
+                              <span>{v.seats[p.seat]?.name}</span>
+                            </TrickMotionCard>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                      {v.phase === "play" && v.trick.length === 0 && (
+                        <span className="empty-trick-note">
+                          {myTurn ? "Your lead" : "Waiting for the lead"}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+              {lobby ? (
+                <section className="lobby-controls">
+                  {you === null ? (
+                    <div className="name-inline">
+                      <label htmlFor="table-name">Your name</label>
+                      <input
+                        id="table-name"
+                        maxLength={24}
+                        autoComplete="nickname"
+                        placeholder="What should we call you?"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                      <p>Choose any empty seat above to join.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="ready-actions">
+                        <button
+                          className={`button ${v.seats[you]?.ready ? "ready-button" : "gold-button"}`}
+                          disabled={!online}
+                          onClick={() => send({ type: "ready" })}
+                        >
+                          {v.seats[you]?.ready ? (
+                            <>
+                              <Check size={18} /> You’re ready
+                            </>
+                          ) : (
+                            <>
+                              I’m ready <Check size={18} />
+                            </>
+                          )}
+                        </button>
+                        {v.host && (
+                          <button
+                            className="button gold-button"
+                            disabled={!allReady || !online}
+                            onClick={() => send({ type: "start" })}
+                          >
+                            Deal the cards <ArrowRight size={18} />
+                          </button>
+                        )}
+                      </div>
+                      <p>
+                        {v.host
+                          ? "Everyone ready? Deal when all four friends are here."
+                          : "The host will deal once everyone is ready."}
+                      </p>
+                      <button
+                        className="text-button leave-seat"
+                        onClick={() => send({ type: "leave" })}
+                      >
+                        <DoorOpen size={14} /> Leave seat
+                      </button>
+                    </>
+                  )}
+                </section>
+              ) : (
+                <section className="hand-zone">
+                  {v.phase === "trump" && v.caller === you && (
+                    <div
+                      className="trump-choice"
+                      aria-label="Choose trump suit"
+                    >
+                      {SUITS.map((s) => (
+                        <button
+                          key={s}
+                          disabled={!online || v.paused}
+                          onClick={() => send({ type: "trump", suit: s })}
+                        >
+                          <SuitIcon suit={s} />
+                          <span>{s}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {v.phase === "hand-end" || v.phase === "finished" ? (
+                    <motion.div
+                      className="hand-result"
+                      key={`result-${v.handNumber}`}
+                      initial={
+                        reduce ? false : { opacity: 0, scale: 0.92, y: 14 }
+                      }
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{
+                        duration: reduce ? 0 : 0.38,
+                        ease: CARD_EASE,
+                      }}
+                    >
+                      {v.result?.winner !== null && (
+                        <WinCelebration reduce={!!reduce} />
+                      )}
+                      <strong>
+                        {v.result?.winner === null
+                          ? `${v.pending} bonus token${v.pending > 1 ? "s" : ""} carried`
+                          : `+${v.result?.tokens} tokens to Team ${(v.result?.winner ?? 0) + 1}`}
+                      </strong>
+                      <span>{v.result?.tricks.join(" – ")} tricks</span>
+                      {v.host ? (
+                        <button
+                          className="button gold-button"
+                          disabled={!online || v.paused}
+                          onClick={() =>
+                            send({
+                              type: v.phase === "finished" ? "rematch" : "next",
+                            })
+                          }
+                        >
+                          {v.phase === "finished" ? (
+                            <>
+                              <RotateCcw size={17} /> Play again
+                            </>
+                          ) : (
+                            <>
+                              Next hand <ArrowRight size={17} />
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <p>
+                          Waiting for the host to{" "}
+                          {v.phase === "finished"
+                            ? "start a rematch"
+                            : "deal the next hand"}
+                          .
+                        </p>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <>
+                      <div className="hand-label">
+                        <span>
+                          {you === null
+                            ? "You’re watching"
+                            : v.phase === "trump"
+                              ? "Your first four"
+                              : "Your hand"}
+                        </span>
+                        <span>
+                          {v.phase === "trump"
+                            ? "4 more after the call"
+                            : myTurn
+                              ? "Choose a card to play"
+                              : you !== null
+                                ? `Team ${(you % 2) + 1} · ${v.hand.length} cards`
+                                : ""}
+                        </span>
+                      </div>
+                      <div className="your-hand">
+                        <AnimatePresence mode="popLayout">
+                          {[...v.hand]
+                            .sort(
+                              (a, b) =>
+                                SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit) ||
+                                b.rank - a.rank,
+                            )
+                            .map((c, i) => (
+                              <motion.button
+                                key={`${v.handNumber}-${c.id}`}
+                                layout={reduce ? false : "position"}
+                                layoutId={
+                                  reduce ? undefined : `${v.handNumber}-${c.id}`
+                                }
+                                className={`hand-card ${myTurn && legal.has(c.id) ? "playable" : ""}`}
+                                disabled={!myTurn || !legal.has(c.id)}
+                                onClick={() =>
+                                  send({ type: "play", card: c.id })
+                                }
+                                aria-label={`Play ${rankLabel(c.rank)} of ${c.suit}`}
+                                initial={
+                                  reduce
+                                    ? false
+                                    : {
+                                        opacity: 0,
+                                        x: 65 - i * 12,
+                                        y: -90,
+                                        rotate: -16,
+                                        scale: 0.75,
+                                      }
+                                }
+                                animate={{
+                                  opacity: 1,
+                                  x: 0,
+                                  y: 0,
+                                  rotate: 0,
+                                  scale: 1,
+                                }}
+                                exit={
+                                  reduce
+                                    ? { opacity: 0, pointerEvents: "none" }
+                                    : {
+                                        opacity: 0,
+                                        scale: 0.85,
+                                        pointerEvents: "none",
+                                        transition: { duration: 0.15 },
+                                      }
+                                }
+                                transition={{
+                                  duration: reduce ? 0 : 0.48,
+                                  ease: CARD_EASE,
+                                  delay: reduce ? 0 : i * 0.045,
+                                  layout: {
+                                    duration: reduce ? 0 : 0.25,
+                                    ease: CARD_EASE,
+                                  },
+                                }}
+                                whileHover={
+                                  reduce || !myTurn || !legal.has(c.id)
+                                    ? undefined
+                                    : { y: -18, rotate: -2, zIndex: 20 }
+                                }
+                                whileFocus={
+                                  reduce ? undefined : { y: -18, zIndex: 20 }
+                                }
+                                whileTap={
+                                  reduce || !myTurn || !legal.has(c.id)
+                                    ? undefined
+                                    : { scale: 0.95 }
+                                }
+                              >
+                                <PlayingCard card={c} />
+                              </motion.button>
+                            ))}
+                        </AnimatePresence>
+                      </div>
+                    </>
+                  )}
+                </section>
+              )}
+            </>
+          )}
+          {!v && (
+            <div className="connection-placeholder">
+              {connection === "unavailable" ? (
+                <>
+                  <WifiOff size={36} />
+                  <Link href="/" className="button gold-button">
+                    Back to Omi <ArrowRight size={17} />
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <LoaderCircle size={30} className="spin" />
+                  <p>
+                    {connection === "disconnected"
+                      ? "Check your connection, or try again."
+                      : "Setting the table…"}
+                  </p>
+                  {connection === "disconnected" && (
+                    <button
+                      className="button gold-button"
+                      onClick={() => location.reload()}
+                    >
+                      Try again <RotateCcw size={17} />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </main>
+        <footer className="room-footer">
+          <span>
+            <span className="tiny-dot" /> Private table
+          </span>
+          <button className="text-button" onClick={() => setRules(true)}>
+            A little help with the rules <ArrowUpRight size={14} />
+          </button>
+        </footer>
+        {rules && <Rules close={() => setRules(false)} />}
+      </div>
+    </LayoutGroup>
   );
 }

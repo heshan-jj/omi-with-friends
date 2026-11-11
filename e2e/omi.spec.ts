@@ -33,6 +33,15 @@ test("home, invite validation, rules, and responsive layout", async ({
   await expect(
     page.getByRole("button", { name: "Create a private table" }),
   ).toBeEnabled();
+  await page
+    .locator(".motion-preview")
+    .evaluate((el) =>
+      Promise.all(
+        el
+          .getAnimations({ subtree: true })
+          .map((a) => a.finished.catch(() => {})),
+      ),
+    );
   await page.screenshot({
     path: "test-results/home-desktop.png",
     fullPage: true,
@@ -69,10 +78,10 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
 }) => {
   const code = Math.random().toString(36).slice(2, 10).padEnd(8, "0");
   const contexts = await Promise.all(
-    [0, 1, 2, 3].map(() =>
+    [0, 1, 2, 3].map((i) =>
       browser.newContext({
         viewport: { width: 1280, height: 900 },
-        reducedMotion: "reduce",
+        reducedMotion: i === 2 ? "reduce" : "no-preference",
       }),
     ),
   );
@@ -119,6 +128,15 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
       .click();
     await expect.poll(async () => (await state(pages[0])).phase).toBe("play");
     expect((await state(pages[0])).hand).toHaveLength(8);
+    await expect(pages[0].locator(".hand-card").last()).toHaveCSS(
+      "opacity",
+      "1",
+    );
+    expect(
+      await pages[2].evaluate(
+        () => matchMedia("(prefers-reduced-motion: reduce)").matches,
+      ),
+    ).toBe(true);
     await pages[0].screenshot({
       path: "test-results/table-desktop.png",
       fullPage: true,

@@ -1783,3 +1783,156 @@ svg {
     transform: none;
   }
 }
+
+/* One deal, then fast feedback: cards carry the motion language. */
+.motion-preview .preview-top-hand .playing-card {
+  animation: deck-arrive 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.motion-preview .preview-play .playing-card {
+  animation: preview-deal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.motion-preview .play-one .playing-card {
+  animation-delay: 0.16s;
+}
+.motion-preview .play-two .playing-card {
+  animation-delay: 0.28s;
+}
+.motion-preview .play-three .playing-card {
+  animation-delay: 0.4s;
+}
+.motion-preview .preview-bottom-hand > div {
+  animation: fan-deal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes deck-arrive {
+  from {
+    translate: 0 -35px;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes preview-deal {
+  from {
+    translate: 45px -145px;
+    rotate: -25deg;
+    scale: 0.65;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+    opacity: 1;
+  }
+}
+@keyframes fan-deal {
+  from {
+    translate: 55px -125px;
+    scale: 0.7;
+    filter: blur(2px);
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    scale: 1;
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+.button:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+.invite-button svg {
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.invite-button:hover svg {
+  transform: rotate(-9deg);
+}
+.animated-number {
+  display: inline-block;
+  position: relative;
+  min-width: 1ch;
+}
+.animated-number > span {
+  display: inline-block;
+}
+.player-seat.has-turn .avatar::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: turn-ripple 0.85s ease-out 2 both;
+}
+@keyframes turn-ripple {
+  from {
+    scale: 1;
+    opacity: 0.8;
+  }
+  to {
+    scale: 1.55;
+    opacity: 0;
+  }
+}
+.winning-card {
+  z-index: 8;
+}
+.winning-card .playing-card {
+  outline: 2px solid var(--gold);
+  box-shadow: 0 9px 18px #061f1960;
+}
+.hand-card {
+  touch-action: manipulation;
+}
+.hand-result {
+  position: relative;
+  isolation: isolate;
+}
+.hand-result > :not(.win-celebration) {
+  position: relative;
+  z-index: 2;
+}
+.win-celebration {
+  position: absolute;
+  inset: -145px 0 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.celebration-piece {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  width: 7px;
+  height: 13px;
+  border-radius: 2px;
+  background: var(--gold);
+}
+.celebration-piece.piece-1 {
+  background: var(--paper);
+  width: 5px;
+  height: 9px;
+}
+.celebration-piece.piece-2 {
+  background: #91bda3;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+.celebration-piece.piece-3 {
+  background: #d57d65;
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-preview *,
+  .player-seat.has-turn .avatar::after {
+    animation: none !important;
+  }
+  .button:active:not(:disabled),
+  .invite-button:hover svg {
+    transform: none;
+  }
+}
