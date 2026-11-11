@@ -30,6 +30,9 @@ test("home, invite validation, rules, and responsive layout", async ({
   await expect(
     page.getByRole("heading", { name: "A table for your friends." }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Create a private table" }),
+  ).toBeEnabled();
   await page.screenshot({
     path: "test-results/home-desktop.png",
     fullPage: true,

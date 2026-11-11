@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: "http://127.0.0.1:3100",
     headless: true,
     launchOptions: {
       executablePath:
@@ -18,10 +18,10 @@ export default defineConfig({
   reporter: "list",
   webServer: [
     {
-      command: "npm run dev",
-      url: "http://127.0.0.1:3000",
-      reuseExistingServer: !process.env.CI,
-      timeout: 60000,
+      command: "npm run build && npm run start -- --port 3100",
+      url: "http://127.0.0.1:3100",
+      reuseExistingServer: false,
+      timeout: 120000,
     },
     {
       command: "XDG_CONFIG_HOME=/tmp/omi-config npm run dev:room",

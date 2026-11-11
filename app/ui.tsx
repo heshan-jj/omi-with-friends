@@ -211,10 +211,12 @@ export function Home() {
   const [error, setError] = useState("");
   const [rules, setRules] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     try {
       setName(localStorage.getItem("omi.name") ?? "");
     } catch {}
+    setHydrated(true);
   }, []);
   function enter(join: boolean) {
     setError("");
@@ -250,7 +252,11 @@ export function Home() {
           <Brand />
           <span>The Sri Lankan card game</span>
         </div>
-        <button className="text-button" onClick={() => setRules(true)}>
+        <button
+          className="text-button"
+          disabled={!hydrated}
+          onClick={() => setRules(true)}
+        >
           <HelpCircle size={17} /> How to play
         </button>
       </header>
@@ -286,11 +292,12 @@ export function Home() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+              disabled={!hydrated || busy}
               required
             />
             <button
               className="button primary create-button"
-              disabled={busy}
+              disabled={busy || !hydrated}
               type="submit"
             >
               {busy ? (
@@ -323,12 +330,13 @@ export function Home() {
                 placeholder="Room code or invite link"
                 autoCapitalize="none"
                 spellCheck={false}
+                disabled={!hydrated || busy}
               />
               <button
                 type="button"
                 aria-label="Join table"
                 onClick={() => enter(true)}
-                disabled={busy}
+                disabled={busy || !hydrated}
               >
                 <ArrowRight size={21} />
               </button>
