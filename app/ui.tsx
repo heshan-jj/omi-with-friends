@@ -37,6 +37,7 @@ import {
   type Suit,
 } from "../lib/game";
 import type { Command, View } from "../lib/protocol";
+import { tableMessage, teamName } from "../lib/table-copy";
 
 export function SuitIcon({
   suit,
@@ -68,10 +69,12 @@ function PlayingCard({
   card,
   back = false,
   small = false,
+  trump = false,
 }: {
   card?: Card;
   back?: boolean;
   small?: boolean;
+  trump?: boolean;
 }) {
   if (back || !card)
     return (
@@ -81,13 +84,18 @@ function PlayingCard({
     );
   return (
     <span
-      className={`playing-card ${card.suit === "hearts" || card.suit === "diamonds" ? "red" : ""} ${small ? "small" : ""}`}
+      className={`playing-card ${card.suit === "hearts" || card.suit === "diamonds" ? "red" : ""} ${small ? "small" : ""} ${trump ? "trump-card" : ""}`}
     >
       <span className="card-corner">
         <b>{rankLabel(card.rank)}</b>
         <SuitIcon suit={card.suit} />
       </span>
       <SuitIcon suit={card.suit} className="card-pip" />
+      {trump && (
+        <span className="card-trump-label" aria-hidden="true">
+          TRUMP
+        </span>
+      )}
       <span className="card-corner bottom">
         <b>{rankLabel(card.rank)}</b>
         <SuitIcon suit={card.suit} />
@@ -117,6 +125,7 @@ function Rules({ close }: { close: () => void }) {
     <dialog
       ref={ref}
       className="rules-dialog"
+      aria-labelledby="rules-title"
       onCancel={close}
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
@@ -129,8 +138,8 @@ function Rules({ close }: { close: () => void }) {
       >
         <X size={22} />
       </button>
-      <h2>A quick hand with the rules.</h2>
-      <p>Four friends. Two teams. Partners sit opposite each other.</p>
+      <h2 id="rules-title">How to play Omi</h2>
+      <p>Play in two teams of two. Your teammate sits opposite you.</p>
       <ol>
         <li>
           <strong>Call trumps.</strong> The player to the dealer’s right chooses
@@ -158,7 +167,7 @@ function Rules({ close }: { close: () => void }) {
         without an announcement or failed-sweep penalty.
       </p>
       <button className="button primary" onClick={close}>
-        Got it. Let’s play <ArrowRight size={18} />
+        Got it <ArrowRight size={18} />
       </button>
     </dialog>
   );
@@ -287,9 +296,9 @@ export function Home() {
             your <em>friends.</em>
           </h1>
           <p className="intro">
-            Bring your people. We’ll bring the cards.
+            Play Omi with 3 friends.
             <br />
-            Play a little Omi, wherever everyone is.
+            Create a table and share the invite link.
           </p>
           <form
             className="entry-form"
@@ -298,7 +307,7 @@ export function Home() {
               enter(false);
             }}
           >
-            <label htmlFor="name">What should we call you?</label>
+            <label htmlFor="name">Your name</label>
             <input
               id="name"
               autoComplete="nickname"
@@ -327,9 +336,7 @@ export function Home() {
               Already have an invite?
               <span />
             </div>
-            <label className="sr-only" htmlFor="room-code">
-              Room code or invite link
-            </label>
+            <label htmlFor="room-code">Room code or invite link</label>
             <div className="join-field">
               <input
                 id="room-code"
@@ -494,54 +501,7 @@ export function Room({ code }: { code: string }) {
     : new Set<string>();
   const seatPosition = (seat: number): TableSide =>
     (["south", "east", "north", "west"] as const)[(seat - (you ?? 0) + 4) % 4];
-  let headline = "Finding your table…";
-  let subline = "Pull up a chair. We’ll be right with you.";
-  if (v) {
-    if (lobby) {
-      headline =
-        you === null ? "Pull up a chair." : "Good company starts here.";
-      subline =
-        you === null
-          ? "Choose a seat. Your partner sits opposite you."
-          : "Share the invite, then get everyone ready.";
-    } else if (v.paused) {
-      headline = "Saving a seat.";
-      subline = "Play will resume when everyone is back. Your cards are safe.";
-    } else if (v.phase === "trump") {
-      headline =
-        v.caller === you
-          ? "Your call. What’s trump?"
-          : `${v.seats[v.caller]?.name} is calling trumps.`;
-      subline =
-        v.caller === you
-          ? "Choose a suit from your first four cards."
-          : "The next four cards arrive after the call.";
-    } else if (v.phase === "play") {
-      headline = myTurn ? "Your turn." : `${v.seats[v.turn]?.name}’s turn.`;
-      subline = v.trick.length
-        ? `Follow ${v.trick[0].card.suit} if you can.`
-        : "Lead any card to start the trick.";
-    } else if (v.phase === "trick-end") {
-      headline = `${v.seats[v.lastWinner ?? 0]?.name} takes the trick.`;
-      subline = "The winner leads the next one.";
-    } else {
-      headline =
-        v.phase === "finished"
-          ? `Team ${(v.result?.winner ?? 0) + 1} wins the match!`
-          : v.result?.winner === null
-            ? "Evenly matched."
-            : `Team ${(v.result?.winner ?? 0) + 1} takes the hand.`;
-      subline = v.result?.message ?? "";
-    }
-  }
-  if (connection === "unavailable") {
-    headline = "The table is unavailable.";
-    subline =
-      "Online tables aren’t available right now. Please try again later.";
-  } else if (connection === "disconnected") {
-    headline = "Reconnecting to your table…";
-    subline = "Keep this tab open. We’re holding your seat.";
-  }
+  const { headline, detail: subline } = tableMessage(v, connection);
   return (
     <LayoutGroup id={code}>
       <div className="room-page">
@@ -583,6 +543,14 @@ export function Room({ code }: { code: string }) {
               </motion.h1>
             </AnimatePresence>
             <p>{subline}</p>
+            {connection === "disconnected" && (
+              <button
+                className="button gold-button reconnect-button"
+                onClick={() => location.reload()}
+              >
+                Reconnect <RotateCcw size={16} />
+              </button>
+            )}
             {copyError && (
               <p className="copy-fallback">
                 Copy this invite:{" "}
@@ -609,30 +577,60 @@ export function Room({ code }: { code: string }) {
                 <span
                   className={you === null || you % 2 === 0 ? "your-team" : ""}
                 >
-                  Team 1{" "}
+                  {teamName(0, you)}{" "}
                   <b>
                     <AnimatedNumber value={v.scores[0]} reduce={!!reduce} />
                   </b>
-                  <small>{v.tricks[0]} tricks</small>
+                  <small>{v.tricks[0]} of 8 tricks</small>
                 </span>
                 <span className="score-target">
-                  {lobby ? "First to 10" : `Hand ${v.handNumber}`}
+                  {lobby ? "Match score" : `Round ${v.handNumber}`}
                   <small>
                     {v.pending
-                      ? `${v.pending} bonus token${v.pending > 1 ? "s" : ""} carried`
-                      : "10 tokens to win"}
+                      ? `Next winner gets +${v.pending} token${v.pending > 1 ? "s" : ""}`
+                      : "First to 10 tokens"}
                   </small>
                 </span>
                 <span
                   className={you !== null && you % 2 === 1 ? "your-team" : ""}
                 >
-                  Team 2{" "}
+                  {teamName(1, you)}{" "}
                   <b>
                     <AnimatedNumber value={v.scores[1]} reduce={!!reduce} />
                   </b>
-                  <small>{v.tricks[1]} tricks</small>
+                  <small>{v.tricks[1]} of 8 tricks</small>
                 </span>
               </div>
+              {!lobby && (
+                <motion.div
+                  className={`trump-banner ${v.trump ? "is-chosen" : "is-pending"}`}
+                  role="status"
+                  aria-label="Trump suit"
+                  key={v.trump ?? "pending-trump"}
+                  initial={reduce ? false : { opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: reduce ? 0 : 0.3, ease: CARD_EASE }}
+                >
+                  {v.trump ? (
+                    <SuitIcon suit={v.trump} />
+                  ) : (
+                    <HelpCircle className="pending-trump-icon" size={30} />
+                  )}
+                  <div>
+                    <span className="trump-banner-label">Trump suit</span>
+                    <strong>{v.trump ?? "Not chosen yet"}</strong>
+                    <span className="trump-banner-help">
+                      {v.trump
+                        ? "Beats other suits when played"
+                        : v.paused
+                          ? "Waiting for players to return"
+                          : v.caller === you
+                            ? "Choose a suit below"
+                            : `${v.seats[v.caller]?.name} will choose`}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
               <div className={`game-table ${lobby ? "is-lobby" : ""}`}>
                 <div className="table-inner-line" />
                 {v.seats.map((player, seat) => (
@@ -673,7 +671,7 @@ export function Room({ code }: { code: string }) {
                               "Not ready"
                             )
                           ) : (
-                            `Team ${(seat % 2) + 1}${v.dealer === seat ? " · Dealer" : ""}`
+                            `${you === null ? `Team ${(seat % 2) + 1}` : seat === you ? "Your seat" : seat === (you + 2) % 4 ? "Your teammate" : "Opponent"}${!player.connected ? " · Disconnected" : v.dealer === seat ? " · Dealer" : ""}`
                           )}
                         </span>
                         {!lobby && seat !== you && (
@@ -714,29 +712,6 @@ export function Room({ code }: { code: string }) {
                     </div>
                   ) : (
                     <>
-                      <motion.div
-                        className="trump-indicator"
-                        key={v.trump ?? "no-trump"}
-                        initial={
-                          reduce
-                            ? false
-                            : { opacity: 0, scale: 0.8, filter: "blur(5px)" }
-                        }
-                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                        transition={{
-                          duration: reduce ? 0 : 0.32,
-                          ease: CARD_EASE,
-                        }}
-                      >
-                        {v.trump ? (
-                          <>
-                            <SuitIcon suit={v.trump} />
-                            <span>{v.trump} trump</span>
-                          </>
-                        ) : (
-                          <span>Trumps to be called</span>
-                        )}
-                      </motion.div>
                       <div className="trick-area">
                         <AnimatePresence>
                           {v.trick.map((p) => (
@@ -755,7 +730,10 @@ export function Room({ code }: { code: string }) {
                               }
                               reduce={!!reduce}
                             >
-                              <PlayingCard card={p.card} />
+                              <PlayingCard
+                                card={p.card}
+                                trump={p.card.suit === v.trump}
+                              />
                               <span>{v.seats[p.seat]?.name}</span>
                             </TrickMotionCard>
                           ))}
@@ -763,7 +741,9 @@ export function Room({ code }: { code: string }) {
                       </div>
                       {v.phase === "play" && v.trick.length === 0 && (
                         <span className="empty-trick-note">
-                          {myTurn ? "Your lead" : "Waiting for the lead"}
+                          {myTurn
+                            ? "Choose a card to start"
+                            : `Waiting for ${v.seats[v.turn]?.name}`}
                         </span>
                       )}
                     </>
@@ -779,11 +759,11 @@ export function Room({ code }: { code: string }) {
                         id="table-name"
                         maxLength={24}
                         autoComplete="nickname"
-                        placeholder="What should we call you?"
+                        placeholder="Enter your name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                       />
-                      <p>Choose any empty seat above to join.</p>
+                      <p>Select an empty seat above to join the game.</p>
                     </div>
                   ) : (
                     <>
@@ -799,7 +779,7 @@ export function Room({ code }: { code: string }) {
                             </>
                           ) : (
                             <>
-                              I’m ready <Check size={18} />
+                              Ready to play <Check size={18} />
                             </>
                           )}
                         </button>
@@ -809,14 +789,14 @@ export function Room({ code }: { code: string }) {
                             disabled={!allReady || !online}
                             onClick={() => send({ type: "start" })}
                           >
-                            Deal the cards <ArrowRight size={18} />
+                            Start game <ArrowRight size={18} />
                           </button>
                         )}
                       </div>
                       <p>
                         {v.host
-                          ? "Everyone ready? Deal when all four friends are here."
-                          : "The host will deal once everyone is ready."}
+                          ? "Start game unlocks when all 4 players are connected and ready."
+                          : "Your teammate sits opposite you. The host starts the game."}
                       </p>
                       <button
                         className="text-button leave-seat"
@@ -830,20 +810,30 @@ export function Room({ code }: { code: string }) {
               ) : (
                 <section className="hand-zone">
                   {v.phase === "trump" && v.caller === you && (
-                    <div
-                      className="trump-choice"
-                      aria-label="Choose trump suit"
-                    >
-                      {SUITS.map((s) => (
-                        <button
-                          key={s}
-                          disabled={!online || v.paused}
-                          onClick={() => send({ type: "trump", suit: s })}
-                        >
-                          <SuitIcon suit={s} />
-                          <span>{s}</span>
-                        </button>
-                      ))}
+                    <div className="trump-picker">
+                      <p>
+                        {v.paused
+                          ? "Trump selection unlocks when everyone returns."
+                          : "Pick the suit you want as trump for this round."}
+                      </p>
+                      <div
+                        className="trump-choice"
+                        aria-label="Choose trump suit"
+                      >
+                        {SUITS.map((s) => (
+                          <button
+                            key={s}
+                            disabled={!online || v.paused}
+                            onClick={() => send({ type: "trump", suit: s })}
+                          >
+                            <SuitIcon suit={s} />
+                            <span>{s}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <p className="trump-picker-help">
+                        A trump card beats cards from the other suits.
+                      </p>
                     </div>
                   )}
                   {v.phase === "hand-end" || v.phase === "finished" ? (
@@ -884,7 +874,7 @@ export function Room({ code }: { code: string }) {
                             </>
                           ) : (
                             <>
-                              Next hand <ArrowRight size={17} />
+                              Deal next round <ArrowRight size={17} />
                             </>
                           )}
                         </button>
@@ -893,7 +883,7 @@ export function Room({ code }: { code: string }) {
                           Waiting for the host to{" "}
                           {v.phase === "finished"
                             ? "start a rematch"
-                            : "deal the next hand"}
+                            : "deal the next round"}
                           .
                         </p>
                       )}
@@ -905,16 +895,22 @@ export function Room({ code }: { code: string }) {
                           {you === null
                             ? "You’re watching"
                             : v.phase === "trump"
-                              ? "Your first four"
+                              ? "Your first 4 cards"
                               : "Your hand"}
                         </span>
                         <span>
                           {v.phase === "trump"
-                            ? "4 more after the call"
+                            ? you === null
+                              ? ""
+                              : v.paused
+                                ? "Waiting for players"
+                                : v.caller === you
+                                  ? "Choose trump to get 4 more"
+                                  : "4 more cards after trump is chosen"
                             : myTurn
-                              ? "Choose a card to play"
+                              ? "Select a card to play"
                               : you !== null
-                                ? `Team ${(you % 2) + 1} · ${v.hand.length} cards`
+                                ? `Waiting for your turn · ${v.hand.length} cards`
                                 : ""}
                         </span>
                       </div>
@@ -938,7 +934,7 @@ export function Room({ code }: { code: string }) {
                                 onClick={() =>
                                   send({ type: "play", card: c.id })
                                 }
-                                aria-label={`Play ${rankLabel(c.rank)} of ${c.suit}`}
+                                aria-label={`Play ${rankLabel(c.rank)} of ${c.suit}${c.suit === v.trump ? ", trump" : ""}`}
                                 initial={
                                   reduce
                                     ? false
@@ -990,7 +986,10 @@ export function Room({ code }: { code: string }) {
                                     : { scale: 0.95 }
                                 }
                               >
-                                <PlayingCard card={c} />
+                                <PlayingCard
+                                  card={c}
+                                  trump={c.suit === v.trump}
+                                />
                               </motion.button>
                             ))}
                         </AnimatePresence>
@@ -1036,7 +1035,7 @@ export function Room({ code }: { code: string }) {
             <span className="tiny-dot" /> Private table
           </span>
           <button className="text-button" onClick={() => setRules(true)}>
-            A little help with the rules <ArrowUpRight size={14} />
+            Game rules <ArrowUpRight size={14} />
           </button>
         </footer>
         {rules && <Rules close={() => setRules(false)} />}

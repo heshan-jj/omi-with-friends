@@ -50,7 +50,7 @@ test("home, invite validation, rules, and responsive layout", async ({
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByLabel("What should we call you?").fill("Heshan");
+  await page.getByLabel("Your name").fill("Heshan");
   await page.getByLabel("Room code or invite link").fill("wrong");
   await page.getByRole("button", { name: "Join table", exact: true }).click();
   await expect(
@@ -103,7 +103,7 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
         })
         .click();
       await expect(
-        pages[i].getByRole("button", { name: "I’m ready" }),
+        pages[i].getByRole("button", { name: "Ready to play" }),
       ).toBeVisible();
     }
     await pages[0].screenshot({
@@ -111,8 +111,8 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
       fullPage: true,
     });
     for (const p of pages)
-      await p.getByRole("button", { name: "I’m ready" }).click();
-    await pages[0].getByRole("button", { name: "Deal the cards" }).click();
+      await p.getByRole("button", { name: "Ready to play" }).click();
+    await pages[0].getByRole("button", { name: "Start game" }).click();
     await expect.poll(async () => (await state(pages[0]))?.phase).toBe("trump");
     const first = await state(pages[0]);
     expect(first.hand).toHaveLength(4);
@@ -120,14 +120,64 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
     expect(JSON.stringify(first)).not.toContain('"key"');
     await expect(
       pages[first.caller].getByRole("heading", {
-        name: "Your call. What’s trump?",
+        name: "Choose the trump suit",
       }),
     ).toBeVisible();
-    await pages[first.caller]
+    const callerPage = pages[first.caller];
+    await expect(callerPage.locator(".hand-label")).toContainText(
+      "Choose trump",
+    );
+    await expect(
+      pages[(first.caller + 1) % 4].locator(".hand-label"),
+    ).toContainText("4 more cards after trump is chosen");
+    await expect(
+      callerPage.getByRole("status", { name: "Trump suit" }),
+    ).toContainText("Not chosen yet");
+    const away = first.caller === 3 ? 2 : 3;
+    await pages[away].goto("about:blank");
+    await expect.poll(async () => (await state(pages[0])).paused).toBe(true);
+    await expect(
+      callerPage.getByRole("heading", { name: "Game paused" }),
+    ).toBeVisible();
+    await expect(callerPage.locator(".table-status")).toContainText(
+      ["Heshan", "Amal", "Nimali", "Kasun"][away],
+    );
+    await expect(
+      callerPage.getByRole("button", { name: "hearts", exact: true }),
+    ).toBeDisabled();
+    await callerPage.screenshot({
+      path: "test-results/paused-trump-desktop.png",
+      fullPage: true,
+    });
+    await callerPage.setViewportSize({ width: 390, height: 844 });
+    await callerPage.screenshot({
+      path: "test-results/paused-trump-mobile.png",
+      fullPage: true,
+    });
+    expect(
+      await callerPage.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await callerPage.setViewportSize({ width: 1280, height: 900 });
+    await pages[away].goto(`/room/${code}`);
+    await expect.poll(async () => (await state(pages[away]))?.you).toBe(away);
+    await expect.poll(async () => (await state(pages[0])).paused).toBe(false);
+    await callerPage
       .getByRole("button", { name: "hearts", exact: true })
       .click();
     await expect.poll(async () => (await state(pages[0])).phase).toBe("play");
     expect((await state(pages[0])).hand).toHaveLength(8);
+    for (const p of pages)
+      await expect(p.getByRole("status", { name: "Trump suit" })).toContainText(
+        "hearts",
+      );
+    const hearts = (await state(pages[0])).hand.filter(
+      (c) => c.suit === "hearts",
+    ).length;
+    await expect(pages[0].locator(".hand-card .card-trump-label")).toHaveCount(
+      hearts,
+    );
     await expect(pages[0].locator(".hand-card").last()).toHaveCSS(
       "opacity",
       "1",
@@ -160,7 +210,7 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
     await pages[3].goto("about:blank");
     await expect.poll(async () => (await state(pages[0])).paused).toBe(true);
     await expect(
-      pages[0].getByRole("heading", { name: "Saving a seat." }),
+      pages[0].getByRole("heading", { name: "Game paused" }),
     ).toBeVisible();
     await pages[3].goto(`/room/${code}`);
     await expect.poll(async () => (await state(pages[3]))?.you).toBe(3);
@@ -197,7 +247,7 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
     expect(done.tricks[0] + done.tricks[1]).toBe(8);
     expect(done.hand).toHaveLength(0);
     expect(done.result).not.toBeNull();
-    await pages[0].getByRole("button", { name: "Next hand" }).click();
+    await pages[0].getByRole("button", { name: "Deal next round" }).click();
     await expect.poll(async () => (await state(pages[0])).handNumber).toBe(2);
     expect((await state(pages[0])).scores).toEqual(done.scores);
     expect(errors).toEqual([]);
@@ -208,7 +258,7 @@ test("four friends play a private hand, preserve hidden cards, and reconnect", a
 
 test("Enter in the invite field joins the supplied room", async ({ page }) => {
   await page.goto("/");
-  await page.getByLabel("What should we call you?").fill("Heshan");
+  await page.getByLabel("Your name").fill("Heshan");
   await page
     .getByLabel("Room code or invite link")
     .fill("http://127.0.0.1:3000/room/enter123");

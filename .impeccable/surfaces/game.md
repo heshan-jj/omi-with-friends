@@ -17,3 +17,7 @@ Focal moment: the cards are dealt into a fan, share their geometry from the loca
 Continuity: animate hand reflow, directional opponent plays, trump reveal and changing score numerals.
 Feedback: lift playable cards on hover/focus, compress taps, pulse the active seat twice, and celebrate decisive hands with one bounded burst.
 Budget: 0.4s card flights, 0.25s reflow, 0.12s status changes; the existing server rhythm stays unchanged. No infinite decorative loops. Reduced motion removes travel, ripples, and confetti while preserving state and score updates.
+
+## Copy and trump guidance
+
+Lead each state with a direct explanation and one available next action. Pause messages name disconnected players. Use Round for a deal, hand for cards, tokens for score, and Your team/Your teammate for relationships. Keep a sticky, high-contrast trump banner below the score; show pending selection honestly, and mark trump card faces with a text label as well as color. Never ask non-callers or spectators to choose trump.

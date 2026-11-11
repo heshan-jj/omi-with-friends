@@ -11,6 +11,7 @@ colors:
   red: "#b64435"
   line: "#d7d8c9"
   card-face: "#fffaf0"
+  trump-face: "#fff0c9"
   card-back: "#c9d2ac"
   primary-hover: "#205541"
   gold-hover: "#f7ce81"
@@ -130,7 +131,7 @@ components:
 
 The private card table is the established visual anchor: deep green felt, warm ivory cards, saffron actions, compact humanist controls and expressive serif display. Rounded table silhouettes and overlapping cards provide the material character.
 
-The interface prioritizes readable cards and clear state. The light entry surface and dark playing surface share the same typography and control shapes; contextual gold emphasis connects invitations, readiness and legal play.
+The interface prioritizes readable cards and clear state. The light entry surface and dark playing surface share the same typography and control shapes; contextual gold emphasis connects invitations, readiness and the trump suit.
 
 **Key Characteristics:**
 
@@ -230,11 +231,17 @@ The serif wordmark is a home link. The entry header pairs it with a short subtit
 
 ### Playing cards
 
-Warm faces carry corner ranks and suits plus a central pip, with an inverted lower corner. Hearts and diamonds are red; clubs and spades use ink. Backs use pale green, a fine diagonal pattern and a centered serif mark. Opponent hands always show backs. A playable hand card gains a gold top edge; unavailable cards dim. Card focus rises above its neighbors and keeps a visible outline.
+Warm faces carry corner ranks and suits plus a central pip, with an inverted lower corner. Hearts and diamonds are red; clubs and spades use ink. Backs use pale green, a fine diagonal pattern and a centered serif mark. Opponent hands always show backs. Trump faces use a gold tint, outline and visible TRUMP label; unavailable cards dim. Card focus rises above its neighbors and keeps a visible outline.
 
 Cards are the focal motion. The home spread deals once on load, completing in about 1.3s. A new hand fans in over 0.48s with 0.045s stagger; a local card shares its layout identity with its table destination. Opponent cards travel from their seat over 0.4s, the winning card gains a gold outline, and collected tricks shrink toward the winner. Remaining hand cards reflow over 0.25s. Playable cards lift on hover/focus (-18px) and compress on tap (0.95 scale). Arrivals use `cubic-bezier(0.16, 1, 0.3, 1)`.
 
 Supporting feedback stays short: status changes (0.12s), score numerals (0.24s), and trump reveal (0.32s). The active seat ripples twice; decisive hands get one bounded confetti burst (1.15s plus a capped stagger). No animation blocks a move or changes the server's pace. Reduced motion removes spatial transitions, ripples and confetti while leaving scores, turn outlines, labels and actions intact. The loading spinner normally rotates over 1.2s with linear timing.
+
+### Trump and play guidance
+
+The trump suit is a prominent sticky banner between score and table. A chosen suit uses gold with a large suit icon, name and short explanation. Pending selection uses a dark outlined banner with “Not chosen yet” and the next action. The banner remains visible while scrolling to the hand. Trump cards carry matching tinted faces and text labels, so identification does not rely on color alone.
+
+Instructions state the current fact and the next available action. Paused games identify disconnected players; callers alone receive the instruction to choose trump. The viewer’s team and teammate are named directly. “Round” names one eight-trick deal; “hand” means the player’s cards; “tokens” are the match score. Spectators receive no prompts to play or choose. Supporting room instructions use readable 12–13px text.
 
 ### Table, seats and scores
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-11T18:18:27.328662+00:00",
+  "generatedAt": "2026-11-11T18:40:26.108968+00:00",
   "title": "Design System: Omi with friends",
   "extensions": {
     "colorMeta": {
@@ -406,7 +406,8 @@
       "Warm paper against deep green felt.",
       "Serif expression paired with compact sans-serif controls.",
       "Recognizable card faces, overlapping hands and anchored seats.",
-      "Visible keyboard focus and reduced-motion support."
+      "Visible keyboard focus and reduced-motion support.",
+      "Sticky trump context and text-labeled trump cards, with direct state and action guidance."
     ],
     "rules": [],
     "dos": [
